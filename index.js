@@ -16,7 +16,7 @@ app.get("/", (req, res) => {
   res.send(`Server is running on port ${port}`);
 });
 
-// ********** DB Collection **********
+// ********** DB Connection **********
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.7ikallh.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
@@ -25,9 +25,48 @@ const client = new MongoClient(uri, {
   serverApi: ServerApiVersion.v1,
 });
 
-console.log(uri);
+const run = async () => {
+  try {
+    await client.connect();
+    console.log("db run connected");
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 
-// ********** DB Collection **********
+run();
+
+// ** Database and collections
+
+const serviceCollection = client.db("photofix").collection("services");
+
+// ********** DB Connection **********
+
+// ********** API **********
+
+// ** Get All Services
+
+app.get("/services", async (req, res) => {
+  try {
+    const query = {};
+
+    const cursor = serviceCollection.find(query);
+    const services = await cursor.toArray();
+
+    res.send({
+      success: true,
+      data: services,
+      message: `Successfully data fetched`,
+    });
+  } catch (error) {
+    res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
+// ********** API **********
 
 // ** listener
 app.listen(port, () => {

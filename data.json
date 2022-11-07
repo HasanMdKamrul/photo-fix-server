@@ -1,0 +1,56 @@
+[
+  {
+    "service_id": 1,
+    "title": "Potrait Photography",
+    "price": 109.95,
+    "description": "Portrait photography is a very well-known and popular style of photography. This style of photography is all about trying to capture the personality, identity, soul, and emotions of a person by utilizing the background atmosphere, poses, and lighting.",
+    "category": "Lifestyle",
+    "image": "https://images.unsplash.com/photo-1511904161727-dd6a4fa2fd46?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
+    "rating": { "rate": 3.9, "count": 120 }
+  },
+  {
+    "service_id": 2,
+    "title": "Wedding Photography",
+    "price": 222.3,
+    "description": "Wedding photography is a specialty in photography that is primarily focused on the photography of events and activities relating to weddings.",
+    "category": "Wedding",
+    "image": "https://images.unsplash.com/photo-1498979237786-9c35706bd45e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
+    "rating": { "rate": 4.1, "count": 259 }
+  },
+  {
+    "service_id": 3,
+    "title": "Pre-Wedding Photography",
+    "price": 155.99,
+    "description": "A pre-shoot is a short photo session with your wedding photographer approximately three to six months before your wedding. The main aim of the pre-shoot is to get used to being in front of the camera, build rapport with your photographer, and receive a lovely set of romantic photographs well before your wedding.",
+    "category": "Wedding",
+    "image": "https://images.unsplash.com/photo-1660800964424-8e892c4deb88?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1171&q=80",
+    "rating": { "rate": 4.7, "count": 500 }
+  },
+  {
+    "service_id": 4,
+    "title": "Post-Wedding Photography",
+    "price": 55.99,
+    "description": "An after session, or often called a post-wedding session, is exactly how it sounds. A photoshoot after you’re already married. This can be the day after you tie the knot, a few weeks, or even years after your marriage. Simply put, it’s a chance for you to slip back into your wedding dress and suit, get your hair and makeup done again, and have a full romantic photo session celebrating your love.",
+    "category": "men's clothing",
+    "image": "https://images.unsplash.com/photo-1460978812857-470ed1c77af0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1595&q=80",
+    "rating": { "rate": 2.1, "count": 430 }
+  },
+  {
+    "service_id": 5,
+    "title": "Fashion Photography",
+    "price": 695,
+    "description": "A fashion photographer takes photographs of the latest clothes, accessories, hairstyles and make-up. Save. Share. Fashion photographers are responsible for how clothing is presented in advertising campaigns, catalogues and fashion magazines.",
+    "category": "Fashion",
+    "image": "https://images.unsplash.com/photo-1611943574626-91c9be96abc6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1017&q=80",
+    "rating": { "rate": 4.6, "count": 400 }
+  },
+  {
+    "service_id": 6,
+    "title": "Product Photography",
+    "price": 168,
+    "description": "Product photography, or e-commerce photography as it's sometimes known, is basically what it sounds like: photos taken and used on websites and social media platforms to help drive sales of your product or service.",
+    "category": "Product",
+    "image": "https://images.unsplash.com/photo-1560141343-966cb5212777?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1026&q=80",
+    "rating": { "rate": 3.9, "count": 70 }
+  }
+]
