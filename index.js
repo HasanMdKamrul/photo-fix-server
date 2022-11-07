@@ -48,16 +48,26 @@ const serviceCollection = client.db("photofix").collection("services");
 
 app.get("/services", async (req, res) => {
   try {
+    const limit = +req.query.limit;
     const query = {};
 
     const cursor = serviceCollection.find(query);
-    const services = await cursor.toArray();
 
-    res.send({
-      success: true,
-      data: services,
-      message: `Successfully data fetched`,
-    });
+    if (limit) {
+      const services = await cursor.limit(limit).toArray();
+      res.send({
+        success: true,
+        data: services,
+        message: `Successfully data fetched`,
+      });
+    } else {
+      const services = await cursor.toArray();
+      res.send({
+        success: true,
+        data: services,
+        message: `Successfully data fetched`,
+      });
+    }
   } catch (error) {
     res.send({
       success: false,
