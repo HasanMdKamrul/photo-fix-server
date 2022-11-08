@@ -109,6 +109,8 @@ app.post("/createreview", async (req, res) => {
   try {
     const review = req.body;
 
+    review.time = Date.now();
+
     console.log(review);
 
     const result = await reviewCollection.insertOne(review);
@@ -137,7 +139,7 @@ app.get("/reviews", async (req, res) => {
       const query = {
         email,
       };
-      const cursor = reviewCollection.find(query);
+      const cursor = reviewCollection.find(query).sort({ time: -1 });
 
       const reviews = await cursor.toArray();
 
@@ -148,7 +150,7 @@ app.get("/reviews", async (req, res) => {
       });
     } else {
       const query = {};
-      const cursor = reviewCollection.find(query);
+      const cursor = reviewCollection.find(query).sort({ time: -1 });
 
       const reviews = await cursor.toArray();
 
