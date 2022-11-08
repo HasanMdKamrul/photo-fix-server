@@ -45,6 +45,33 @@ const reviewCollection = client.db("photofix").collection("reviews");
 
 // ********** API **********
 
+// ** Post your service
+
+app.post("/createservice", async (req, res) => {
+  try {
+    const service = req.body;
+
+    service.time = Date.now();
+
+    console.log(service);
+
+    const result = await serviceCollection.insertOne(service);
+
+    result.insertedId &&
+      res.send({
+        success: true,
+        message: `Service created successfully`,
+      });
+  } catch (error) {
+    res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
+// ** Get All Services
+
 // ** Get All Services
 
 app.get("/services", async (req, res) => {
@@ -52,7 +79,7 @@ app.get("/services", async (req, res) => {
     const limit = +req.query.limit;
     const query = {};
 
-    const cursor = serviceCollection.find(query);
+    const cursor = serviceCollection.find(query).sort({ time: -1 });
 
     if (limit) {
       const services = await cursor.limit(limit).toArray();
