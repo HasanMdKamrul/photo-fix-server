@@ -46,31 +46,26 @@ const reviewCollection = client.db("photofix").collection("reviews");
 
 // ** Verify JWT
 
-const verifyJwt = (req, res, next) => {
+function verifyJWT(req, res, next) {
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
     return res
-      .status(403)
-      .send({ success: false, message: "unauthorised access" });
+      .status(401)
+      .send({ success: false, message: "unauthorized access" });
   }
-
-  // ** verify token
-
   const token = authHeader.split(" ")[1];
 
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
     if (err) {
       return res
         .status(403)
-        .send({ success: false, message: "unauthorised access" });
+        .send({ success: false, message: "Forbidden access" });
     }
-
     req.decoded = decoded;
-
     next();
   });
-};
+}
 
 // ** Verify JWT
 
@@ -188,7 +183,7 @@ app.post("/createreview", async (req, res) => {
 
 // ** get the reviews of a specific service
 
-app.get("/reviews", verifyJwt, async (req, res) => {
+app.get("/reviews", verifyJWT, async (req, res) => {
   try {
     const email = req.query.email;
     console.log(typeof email);
@@ -259,22 +254,15 @@ app.delete("/reviews/delete/:id", async (req, res) => {
 // ** JWT Token generation Api
 
 app.post("/jwt", (req, res) => {
-  try {
-    const user = req.body;
+  const user = req.body;
 
-    console.log(user);
+  console.log(user);
 
-    const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
+  const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
 
-    console.log(token);
+  console.log(token);
 
-    res.send({ token: token, message: "Successfully token generated" });
-  } catch (error) {
-    res.send({
-      success: false,
-      message: error.message,
-    });
-  }
+  res.send({ token: token, message: "Successfully token generated" });
 });
 
 // ** JWT Token generation Api
