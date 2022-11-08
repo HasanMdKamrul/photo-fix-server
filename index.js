@@ -5,6 +5,7 @@ const cors = require("cors");
 const app = express();
 const port = process.env.PORT || 15000;
 require("dotenv").config();
+const jwt = require("jsonwebtoken");
 
 // ** Middlewares
 app.use(cors());
@@ -42,6 +43,36 @@ const serviceCollection = client.db("photofix").collection("services");
 const reviewCollection = client.db("photofix").collection("reviews");
 
 // ********** DB Connection **********
+
+// ** Verify JWT
+
+const verifyJwt = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader) {
+    return res
+      .status(403)
+      .send({ success: false, message: "unauthorised access" });
+  }
+
+  // ** verify token
+
+  const token = authHeader.split(" ")[1];
+
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+    if (err) {
+      return res
+        .status(403)
+        .send({ success: false, message: "unauthorised access" });
+    }
+
+    req.decoded = decoded;
+
+    next();
+  });
+};
+
+// ** Verify JWT
 
 // ********** API **********
 
@@ -157,24 +188,30 @@ app.post("/createreview", async (req, res) => {
 
 // ** get the reviews of a specific service
 
-app.get("/reviews", async (req, res) => {
+app.get("/reviews", verifyJwt, async (req, res) => {
   try {
     const email = req.query.email;
     console.log(typeof email);
 
     if (email) {
-      const query = {
-        email,
-      };
-      const cursor = reviewCollection.find(query).sort({ time: -1 });
+      if (req.decoded.email !== email) {
+        return res
+          .status(403)
+          .send({ success: false, message: "unauthorised access" });
+      } else {
+        const query = {
+          email,
+        };
+        const cursor = reviewCollection.find(query).sort({ time: -1 });
 
-      const reviews = await cursor.toArray();
+        const reviews = await cursor.toArray();
 
-      return res.send({
-        success: true,
-        data: reviews,
-        message: `Successfully reviews fetched`,
-      });
+        return res.send({
+          success: true,
+          data: reviews,
+          message: `Successfully reviews fetched`,
+        });
+      }
     } else {
       const query = {};
       const cursor = reviewCollection.find(query).sort({ time: -1 });
@@ -197,20 +234,50 @@ app.get("/reviews", async (req, res) => {
 
 // ** Delete Reviews
 app.delete("/reviews/delete/:id", async (req, res) => {
-  const id = req.params.id;
+  try {
+    const id = req.params.id;
 
-  const query = {
-    _id: ObjectId(id),
-  };
+    const query = {
+      _id: ObjectId(id),
+    };
 
-  const result = await reviewCollection.deleteOne(query);
+    const result = await reviewCollection.deleteOne(query);
 
-  result.deletedCount &&
+    result.deletedCount &&
+      res.send({
+        success: true,
+        message: `Successfully Deleted The review`,
+      });
+  } catch (error) {
     res.send({
-      success: true,
-      message: `Successfully Deleted The review`,
+      success: false,
+      message: error.message,
     });
+  }
 });
+
+// ** JWT Token generation Api
+
+app.post("/jwt", (req, res) => {
+  try {
+    const user = req.body;
+
+    console.log(user);
+
+    const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
+
+    console.log(token);
+
+    res.send({ token: token, message: "Successfully token generated" });
+  } catch (error) {
+    res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
+// ** JWT Token generation Api
 
 // ********** API **********
 
