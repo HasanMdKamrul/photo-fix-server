@@ -39,6 +39,7 @@ run();
 // ** Database and collections
 
 const serviceCollection = client.db("photofix").collection("services");
+const reviewCollection = client.db("photofix").collection("reviews");
 
 // ********** DB Connection **********
 
@@ -93,6 +94,33 @@ app.get("/services/:id", async (req, res) => {
         success: true,
         data: service,
         message: `Successfully data fetched`,
+      });
+  } catch (error) {
+    res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
+// ** Create reviews
+
+app.post("/createreview", async (req, res) => {
+  try {
+    const review = {
+      name: "Hasan",
+      reviewerImage:
+        "https://pyxis.nymag.com/v1/imgs/b39/e77/b9fa5f81b1c04bbf439ef40515b1b6e464-tom-cruise.rsquare.w330.jpg",
+      reviewText: "Service was outstanding",
+      serviceId: "63694b10ab07701364f25035",
+    };
+
+    const result = await reviewCollection.insertOne(review);
+
+    result.insertedId &&
+      res.send({
+        success: true,
+        message: `Review created successfully`,
       });
   } catch (error) {
     res.send({
