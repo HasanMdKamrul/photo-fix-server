@@ -158,22 +158,29 @@ app.get("/reviews", async (req, res) => {
         message: `Successfully reviews fetched`,
       });
     }
-
-    // const cursor = reviewCollection.find(query);
-
-    // const reviews = await cursor.toArray();
-
-    // res.send({
-    //   success: true,
-    //   data: reviews,
-    //   message: `Successfully reviews fetched`,
-    // });
   } catch (error) {
     res.send({
       success: false,
       message: error.message,
     });
   }
+});
+
+// ** Delete Reviews
+app.delete("/reviews/delete/:id", async (req, res) => {
+  const id = req.params.id;
+
+  const query = {
+    _id: ObjectId(id),
+  };
+
+  const result = await reviewCollection.deleteOne(query);
+
+  result.deletedCount &&
+    res.send({
+      success: true,
+      message: `Successfully Deleted The review`,
+    });
 });
 
 // ********** API **********
