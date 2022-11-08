@@ -107,13 +107,9 @@ app.get("/services/:id", async (req, res) => {
 
 app.post("/createreview", async (req, res) => {
   try {
-    const review = {
-      name: "Hasan",
-      reviewerImage:
-        "https://pyxis.nymag.com/v1/imgs/b39/e77/b9fa5f81b1c04bbf439ef40515b1b6e464-tom-cruise.rsquare.w330.jpg",
-      reviewText: "Service was outstanding",
-      serviceId: "63694b10ab07701364f25035",
-    };
+    const review = req.body;
+
+    console.log(review);
 
     const result = await reviewCollection.insertOne(review);
 
@@ -122,6 +118,56 @@ app.post("/createreview", async (req, res) => {
         success: true,
         message: `Review created successfully`,
       });
+  } catch (error) {
+    res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
+// ** get the reviews of a specific service
+
+app.get("/reviews", async (req, res) => {
+  try {
+    const email = req.query.email;
+    console.log(typeof email);
+
+    if (email) {
+      const query = {
+        email,
+      };
+      const cursor = reviewCollection.find(query);
+
+      const reviews = await cursor.toArray();
+
+      return res.send({
+        success: true,
+        data: reviews,
+        message: `Successfully reviews fetched`,
+      });
+    } else {
+      const query = {};
+      const cursor = reviewCollection.find(query);
+
+      const reviews = await cursor.toArray();
+
+      return res.send({
+        success: true,
+        data: reviews,
+        message: `Successfully reviews fetched`,
+      });
+    }
+
+    // const cursor = reviewCollection.find(query);
+
+    // const reviews = await cursor.toArray();
+
+    // res.send({
+    //   success: true,
+    //   data: reviews,
+    //   message: `Successfully reviews fetched`,
+    // });
   } catch (error) {
     res.send({
       success: false,
