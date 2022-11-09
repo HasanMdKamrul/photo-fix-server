@@ -1,4 +1,4 @@
-// ** Inports
+// ** Imports
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const express = require("express");
 const cors = require("cors");
@@ -365,13 +365,7 @@ app.get("/blogs", async (req, res) => {
 
 app.post("/jwt", (req, res) => {
   const user = req.body;
-
-  //   console.log(user);
-
   const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
-
-  //   console.log(token);
-
   res.send({ token: token, message: "Successfully token generated" });
 });
 
@@ -381,12 +375,5 @@ app.post("/jwt", (req, res) => {
 
 // ** listener
 app.listen(port, () => {
-  client.connect((err) => {
-    if (err) {
-      console.log(err.message);
-    } else {
-      console.log("DB Connected");
-    }
-  });
   console.log(`Server is running on port: ${port}`);
 });
