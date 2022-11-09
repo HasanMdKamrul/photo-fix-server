@@ -41,6 +41,8 @@ run();
 
 const serviceCollection = client.db("photofix").collection("services");
 const reviewCollection = client.db("photofix").collection("reviews");
+const photoCollection = client.db("photofix").collection("photos");
+const blogCollection = client.db("photofix").collection("blogs");
 
 // ********** DB Connection **********
 
@@ -183,29 +185,6 @@ app.post("/createreview", async (req, res) => {
 
 // ** get the reviews of a specific service
 
-// if (email) {
-//   if (req.decoded.email !== email) {
-//     return res
-//       .status(403)
-//       .send({ success: false, message: "unauthorised access" });
-//   } else {
-//     const query = {
-//       email,
-//     };
-//     const cursor = reviewCollection.find(query).sort({ time: -1 });
-
-//     const reviews = await cursor.toArray();
-
-//     return res.send({
-//       success: true,
-//       data: reviews,
-//       message: `Successfully reviews fetched`,
-//     });
-//   }
-// } else {
-
-// }
-
 app.get("/myreviews", verifyJWT, async (req, res) => {
   try {
     const email = req.query.email;
@@ -331,6 +310,49 @@ app.patch("/update/:id", async (req, res) => {
         success: true,
         message: `data has been successfully updated`,
       });
+  } catch (error) {
+    res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
+// ** get photos
+
+app.get("/photos", async (req, res) => {
+  try {
+    const query = {};
+    const cursor = photoCollection.find(query);
+    const photos = await cursor.toArray();
+
+    res.send({
+      success: true,
+      data: photos,
+      message: `Successfully photos fetched`,
+    });
+  } catch (error) {
+    res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
+// ** get blogs Api
+
+app.get("/blogs", async (req, res) => {
+  try {
+    const query = {};
+
+    const cursor = blogCollection.find(query);
+    const blogs = await cursor.toArray();
+
+    res.send({
+      success: true,
+      data: blogs,
+      message: `Successfully blogs fetched`,
+    });
   } catch (error) {
     res.send({
       success: false,
