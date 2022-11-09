@@ -109,53 +109,69 @@ app.post("/createservice", async (req, res) => {
 
 // ** Get All Services
 
-app.get("/allservices", async (req, res) => {
-  try {
-    const size = +req.query.dataPerPage;
-    const currentPage = +req.query.currentPage;
+// app.get("/allservices", async (req, res) => {
+//   try {
+//     const size = +req.query.dataPerPage;
+//     const currentPage = +req.query.currentPage;
 
-    console.log(size, currentPage);
+//     console.log(size, currentPage);
 
-    const query = {};
+//     const query = {};
 
-    const cursor = serviceCollection.find(query);
+//     const cursor = serviceCollection.find(query);
 
-    const services = await cursor
-      .skip(currentPage * size)
-      .limit(size)
-      .toArray();
+//     const services = await cursor
+//       .skip(currentPage * size)
+//       .limit(size)
+//       .toArray();
 
-    const count = await serviceCollection.estimatedDocumentCount();
+//     const count = await serviceCollection.estimatedDocumentCount();
 
-    console.log(count);
+//     console.log(count);
 
-    // console.log(services);
+//     // console.log(services);
 
-    res.send({
-      success: true,
-      count,
-      data: services,
-    });
-  } catch (error) {
-    console.log(error.message);
-  }
-});
+//     res.send({
+//       success: true,
+//       count,
+//       data: services,
+//     });
+//   } catch (error) {
+//     console.log(error.message);
+//   }
+// });
 
 // * get home page services
 
 app.get("/services", async (req, res) => {
   try {
     const limit = +req.query.limit;
+    const size = +req.query.dataPerPage;
+    const currentPage = +req.query.currentPage;
     const query = {};
 
     const cursor = serviceCollection.find(query).sort({ time: -1 });
 
-    const services = await cursor.limit(limit).toArray();
-    res.send({
-      success: true,
-      data: services,
-      message: `Successfully data fetched`,
-    });
+    if (limit) {
+      const services = await cursor.limit(limit).toArray();
+      return res.send({
+        success: true,
+        data: services,
+        message: `Successfully data fetched`,
+      });
+    } else {
+      const services = await cursor
+        .skip(currentPage * size)
+        .limit(size)
+        .toArray();
+      const count = await serviceCollection.estimatedDocumentCount();
+      return res.send({
+        success: true,
+        count,
+        data: services,
+        message: `Successfully data fetched`,
+      });
+    }
   } catch (error) {
     res.send({
       success: false,
