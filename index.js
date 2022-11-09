@@ -111,31 +111,33 @@ app.post("/createservice", async (req, res) => {
 
 app.get("/allservices", async (req, res) => {
   try {
-    const size = +req.query.size;
+    const size = +req.query.dataPerPage;
     const currentPage = +req.query.currentPage;
+
+    console.log(size, currentPage);
 
     const query = {};
 
     const cursor = serviceCollection.find(query);
 
     const services = await cursor
-      .skip(size * currentPage)
+      .skip(currentPage * size)
       .limit(size)
       .toArray();
 
     const count = await serviceCollection.estimatedDocumentCount();
 
+    console.log(count);
+
+    // console.log(services);
+
     res.send({
       success: true,
       count,
       data: services,
-      message: `Successfully data fetched`,
     });
   } catch (error) {
-    res.send({
-      success: false,
-      message: error.message,
-    });
+    console.log(error.message);
   }
 });
 
@@ -147,6 +149,7 @@ app.get("/services", async (req, res) => {
     const query = {};
 
     const cursor = serviceCollection.find(query).sort({ time: -1 });
+
     const services = await cursor.limit(limit).toArray();
     res.send({
       success: true,
