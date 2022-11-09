@@ -183,34 +183,44 @@ app.post("/createreview", async (req, res) => {
 
 // ** get the reviews of a specific service
 
-app.get("/reviews", verifyJWT, async (req, res) => {
+// if (email) {
+//   if (req.decoded.email !== email) {
+//     return res
+//       .status(403)
+//       .send({ success: false, message: "unauthorised access" });
+//   } else {
+//     const query = {
+//       email,
+//     };
+//     const cursor = reviewCollection.find(query).sort({ time: -1 });
+
+//     const reviews = await cursor.toArray();
+
+//     return res.send({
+//       success: true,
+//       data: reviews,
+//       message: `Successfully reviews fetched`,
+//     });
+//   }
+// } else {
+
+// }
+
+app.get("/myreviews", verifyJWT, async (req, res) => {
   try {
     const email = req.query.email;
     console.log(typeof email);
 
-    if (email) {
-      if (req.decoded.email !== email) {
-        return res
-          .status(403)
-          .send({ success: false, message: "unauthorised access" });
-      } else {
-        const query = {
-          email,
-        };
-        const cursor = reviewCollection.find(query).sort({ time: -1 });
-
-        const reviews = await cursor.toArray();
-
-        return res.send({
-          success: true,
-          data: reviews,
-          message: `Successfully reviews fetched`,
-        });
-      }
+    if (req.decoded.email !== email) {
+      return res
+        .status(403)
+        .send({ success: false, message: "unauthorised access" });
     } else {
-      const query = {};
-      const cursor = reviewCollection.find(query).sort({ time: -1 });
+      const query = {
+        email,
+      };
 
+      const cursor = reviewCollection.find(query).sort({ time: -1 });
       const reviews = await cursor.toArray();
 
       return res.send({
@@ -227,8 +237,28 @@ app.get("/reviews", verifyJWT, async (req, res) => {
   }
 });
 
+app.get("/reviews", async (req, res) => {
+  try {
+    const query = {};
+    const cursor = reviewCollection.find(query).sort({ time: -1 });
+
+    const reviews = await cursor.toArray();
+
+    return res.send({
+      success: true,
+      data: reviews,
+      message: `Successfully reviews fetched`,
+    });
+  } catch (error) {
+    res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
 // ** Delete Reviews
-app.delete("/reviews/delete/:id", async (req, res) => {
+app.delete("/myreviews/delete/:id", async (req, res) => {
   try {
     const id = req.params.id;
 
@@ -251,16 +281,74 @@ app.delete("/reviews/delete/:id", async (req, res) => {
   }
 });
 
+// ** Get Single Review to update
+
+app.get("/update/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const query = {
+      _id: ObjectId(id),
+    };
+
+    const review = await reviewCollection.findOne(query);
+
+    res.send({
+      success: true,
+      data: review,
+      message: "Successfully retrived review",
+    });
+  } catch (error) {
+    res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
+app.patch("/update/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const { reviewText } = req.body;
+
+    console.log(id);
+    console.log(reviewText);
+
+    const filter = {
+      _id: ObjectId(id),
+    };
+
+    const updatedDoc = {
+      $set: {
+        reviewText: reviewText,
+      },
+    };
+
+    const result = await reviewCollection.updateOne(filter, updatedDoc);
+
+    result.modifiedCount &&
+      res.send({
+        success: true,
+        message: `data has been successfully updated`,
+      });
+  } catch (error) {
+    res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
 // ** JWT Token generation Api
 
 app.post("/jwt", (req, res) => {
   const user = req.body;
 
-  console.log(user);
+  //   console.log(user);
 
   const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
 
-  console.log(token);
+  //   console.log(token);
 
   res.send({ token: token, message: "Successfully token generated" });
 });
