@@ -1,4 +1,4 @@
-// ** Imports
+// ** Inports
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const express = require("express");
 const cors = require("cors");
@@ -20,11 +20,18 @@ app.get("/", (req, res) => {
 // ********** DB Connection **********
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.7ikallh.mongodb.net/?retryWrites=true&w=majority`;
-const client = new MongoClient(uri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverApi: ServerApiVersion.v1,
-});
+// const client = new MongoClient(uri, {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+//   serverApi: ServerApiVersion.v1,
+// });
+const client = new MongoClient(
+  uri,
+  { useUnifiedTopology: true },
+  { useNewUrlParser: true },
+  { connectTimeoutMS: 30000 },
+  { keepAlive: 1 }
+);
 
 const run = async () => {
   try {
@@ -107,6 +114,9 @@ app.get("/services", async (req, res) => {
     const limit = +req.query.limit;
     const query = {};
 
+    const size = +req.query.size;
+    const currentPage = +req.query.currentPage;
+
     const cursor = serviceCollection.find(query).sort({ time: -1 });
 
     if (limit) {
@@ -117,9 +127,14 @@ app.get("/services", async (req, res) => {
         message: `Successfully data fetched`,
       });
     } else {
-      const services = await cursor.toArray();
+      const services = await cursor
+        .skip(currentPage * size)
+        .limit(size)
+        .toArray();
+      const count = await serviceCollection.estimatedDocumentCount();
       res.send({
         success: true,
+        count,
         data: services,
         message: `Successfully data fetched`,
       });
@@ -365,7 +380,13 @@ app.get("/blogs", async (req, res) => {
 
 app.post("/jwt", (req, res) => {
   const user = req.body;
+
+  //   console.log(user);
+
   const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
+
+  //   console.log(token);
+
   res.send({ token: token, message: "Successfully token generated" });
 });
 
