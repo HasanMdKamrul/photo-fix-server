@@ -1,4 +1,4 @@
-// ** Inports
+// ** Imports
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const express = require("express");
 const cors = require("cors");
@@ -20,11 +20,9 @@ app.get("/", (req, res) => {
 // ********** DB Connection **********
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.7ikallh.mongodb.net/?retryWrites=true&w=majority`;
-// const client = new MongoClient(uri, {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true,
-//   serverApi: ServerApiVersion.v1,
-// });
+
+// ** Client
+
 const client = new MongoClient(
   uri,
   { useUnifiedTopology: true },
@@ -32,6 +30,8 @@ const client = new MongoClient(
   { connectTimeoutMS: 30000 },
   { keepAlive: 1 }
 );
+
+// ** Main run function
 
 const run = async () => {
   try {
@@ -43,6 +43,8 @@ const run = async () => {
 };
 
 run();
+
+// ** Main run function
 
 // ** Database and collections
 
@@ -56,6 +58,7 @@ const blogCollection = client.db("photofix").collection("blogs");
 // ** Verify JWT
 
 function verifyJWT(req, res, next) {
+  // ** geting the localStored token via headers
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
@@ -63,7 +66,10 @@ function verifyJWT(req, res, next) {
       .status(401)
       .send({ success: false, message: "unauthorized access" });
   }
+  // ** Spliting the token from Bearer
   const token = authHeader.split(" ")[1];
+
+  // ** Token verification
 
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
     if (err) {
