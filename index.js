@@ -107,40 +107,6 @@ app.post("/createservice", async (req, res) => {
 
 // ** Get All Services
 
-// ** Get All Services
-
-// app.get("/allservices", async (req, res) => {
-//   try {
-//     const size = +req.query.dataPerPage;
-//     const currentPage = +req.query.currentPage;
-
-//     console.log(size, currentPage);
-
-//     const query = {};
-
-//     const cursor = serviceCollection.find(query);
-
-//     const services = await cursor
-//       .skip(currentPage * size)
-//       .limit(size)
-//       .toArray();
-
-//     const count = await serviceCollection.estimatedDocumentCount();
-
-//     console.log(count);
-
-//     // console.log(services);
-
-//     res.send({
-//       success: true,
-//       count,
-//       data: services,
-//     });
-//   } catch (error) {
-//     console.log(error.message);
-//   }
-// });
-
 // * get home page services
 
 app.get("/services", async (req, res) => {
@@ -192,12 +158,11 @@ app.get("/services/:id", async (req, res) => {
 
     const service = await serviceCollection.findOne(query);
 
-    service &&
-      res.send({
-        success: true,
-        data: service,
-        message: `Successfully data fetched`,
-      });
+    return res.send({
+      success: true,
+      data: service,
+      message: `Successfully data fetched`,
+    });
   } catch (error) {
     res.send({
       success: false,
@@ -285,7 +250,7 @@ app.get("/reviews", async (req, res) => {
 });
 
 // ** Delete Reviews
-app.delete("/myreviews/delete/:id", async (req, res) => {
+app.delete("/myreviews/delete/:id", verifyJWT, async (req, res) => {
   try {
     const id = req.params.id;
 
@@ -310,7 +275,7 @@ app.delete("/myreviews/delete/:id", async (req, res) => {
 
 // ** Get Single Review to update
 
-app.get("/update/:id", async (req, res) => {
+app.get("/update/:id", verifyJWT, async (req, res) => {
   try {
     const id = req.params.id;
 
@@ -320,7 +285,7 @@ app.get("/update/:id", async (req, res) => {
 
     const review = await reviewCollection.findOne(query);
 
-    res.send({
+    return res.send({
       success: true,
       data: review,
       message: "Successfully retrived review",
@@ -333,7 +298,7 @@ app.get("/update/:id", async (req, res) => {
   }
 });
 
-app.patch("/update/:id", async (req, res) => {
+app.patch("/update/:id", verifyJWT, async (req, res) => {
   try {
     const id = req.params.id;
     const { reviewText } = req.body;
@@ -374,7 +339,7 @@ app.get("/photos", async (req, res) => {
     const cursor = photoCollection.find(query);
     const photos = await cursor.toArray();
 
-    res.send({
+    return res.send({
       success: true,
       data: photos,
       message: `Successfully photos fetched`,
@@ -396,7 +361,7 @@ app.get("/blogs", async (req, res) => {
     const cursor = blogCollection.find(query);
     const blogs = await cursor.toArray();
 
-    res.send({
+    return res.send({
       success: true,
       data: blogs,
       message: `Successfully blogs fetched`,
@@ -420,7 +385,7 @@ app.post("/jwt", (req, res) => {
 
   //   console.log(token);
 
-  res.send({ token: token, message: "Successfully token generated" });
+  return res.send({ token: token, message: "Successfully token generated" });
 });
 
 // ** JWT Token generation Api
